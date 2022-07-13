@@ -1,26 +1,9 @@
-import { getOrCreateGameState, PointType } from './gameState'
+import { getOrCreateGameState } from './gameState'
 import { setBorders } from './utils/setBorders'
 import { startEngine } from './process'
 import { SCALE } from './constants'
 import { drawInitial } from './draw'
 import { initControls } from './controls/initControls'
-import { getColor } from './utils/getColor'
-
-const CONTROLLED_POINT_TYPES = [
-  PointType.Sand,
-  PointType.Water,
-  PointType.Ice,
-  PointType.Steam,
-  PointType.Lava,
-  PointType.Fire,
-  PointType.Fuel,
-  PointType.StaticStone,
-  PointType.Hot,
-  PointType.Cold,
-  PointType.Virus,
-  PointType.Void,
-  PointType.Clone,
-]
 
 const init = async () => {
   try {
@@ -52,7 +35,7 @@ const init = async () => {
 
   const state = getOrCreateGameState()
 
-  const controlTypes = [...CONTROLLED_POINT_TYPES, 'Eraser'] as Array<PointType | "Eraser">
+  const controlTypes = ['point', 'eraser'] as Array<typeof state.currentType>
   controlTypes.forEach((type) => {
     const button = document.createElement('button')
     button.classList.add('type')
@@ -60,7 +43,6 @@ const init = async () => {
       button.classList.add('type--selected')
     }
     button.classList.add(`type--${type}`)
-    button.style.backgroundColor = type === 'Eraser' ? 'white' : getColor(type)
     button.innerText = type
     button.addEventListener('click', () => {
       const state = getOrCreateGameState()
@@ -94,15 +76,6 @@ const init = async () => {
     state.speed = speedInput.valueAsNumber
   });
   controls.appendChild(speedInput)
-
-  const showTempInput = document.createElement('input')
-  showTempInput.type = 'checkbox'
-  showTempInput.addEventListener('change', () => {
-    const state = getOrCreateGameState()
-    state.showTemperature = showTempInput.checked
-    drawInitial(canvas)
-  });
-  controls.appendChild(showTempInput)
 
   setBorders(proportions.width / SCALE, proportions.height / SCALE)
 

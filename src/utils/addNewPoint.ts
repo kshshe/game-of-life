@@ -3,36 +3,9 @@ import {
   Coordinate,
   getOrCreateGameState,
   PointData,
-  PointType,
 } from '../gameState'
 import { getCoordinateKey } from './getCoordinateKey'
 import { getPointOnCoordinate } from './getPointOnCoordinate'
-
-const POINT_INITIAL_DATA: Partial<Record<PointType, Partial<PointData>>> = {
-  [PointType.Ice]: {
-    temperature: -100,
-  },
-  [PointType.Water]: {
-    temperature: 5,
-  },
-  [PointType.Steam]: {
-    temperature: 95,
-  },
-  [PointType.Lava]: {
-    temperature: 300,
-  },
-  [PointType.Fire]: {
-    temperature: 700,
-  },
-  [PointType.Hot]: {
-    temperature: 1200,
-    fixedTemperature: true,
-  },
-  [PointType.Cold]: {
-    temperature: -700,
-    fixedTemperature: true,
-  },
-}
 
 const updateCoordinate = (
   point: PointData,
@@ -45,9 +18,7 @@ const updateCoordinate = (
 }
 
 const createPointObject = (
-  coordinate: Coordinate,
-  type: PointType,
-): PointData => {
+  coordinate: Coordinate): PointData => {
   let { x, y } = coordinate
   let pauseUpdates = false
   let localCoordinate = {
@@ -89,17 +60,12 @@ const createPointObject = (
       })
       pauseUpdates = false
     },
-    type,
-    temperature: 0,
-    age: 1,
-    fixedTemperature: false,
-    ...(POINT_INITIAL_DATA[type] || {}),
   }
 
   return point
 }
 
-export const addNewPoint = (coordinate: Coordinate, type?: PointType) => {
+export const addNewPoint = (coordinate: Coordinate, force: boolean = false) => {
   const state = getOrCreateGameState()
   if (coordinate.x < 0 || coordinate.y < 0) {
     return
@@ -110,27 +76,25 @@ export const addNewPoint = (coordinate: Coordinate, type?: PointType) => {
   ) {
     return
   }
-  const typeToAdd = type || state.currentType
-  if (typeToAdd === 'Eraser') {
+  const isEraserEnabled = state.currentType === 'eraser'
+  if (isEraserEnabled && !force) {
     const pointThere = getPointOnCoordinate(coordinate)
     if (pointThere) {
-      state.points = state.points.filter((point) => point !== pointThere)
       delete state.pointsByCoordinate[getCoordinateKey(pointThere.coordinate)]
       redrawPoint(pointThere.coordinate)
     }
     return
   }
-  if (state.points.length > 6000) {
+  if (Object.keys(state.pointsByCoordinate).length > 3000) {
     return
   }
   const pointThere = getPointOnCoordinate(coordinate)
   if (pointThere) {
     return
   }
-  const point = createPointObject(coordinate, typeToAdd)
+  const point = createPointObject(coordinate)
   state.pointsByCoordinate[getCoordinateKey(coordinate)] = point
   redrawPoint(coordinate)
-  state.points.push(point)
 }
 
 // @ts-ignore

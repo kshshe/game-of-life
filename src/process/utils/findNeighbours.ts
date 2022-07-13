@@ -1,4 +1,4 @@
-import { GameState, PointData } from "../../gameState";
+import { Coordinate, GameState, PointData } from "../../gameState";
 import { getCoordinateKey } from "../../utils/getCoordinateKey";
 
 export const NEIGHBOUR_DIRECTIONS = [
@@ -12,8 +12,8 @@ export const NEIGHBOUR_DIRECTIONS = [
     { x: 1, y: 1 },
   ]
 
-export const findNeighbours = (state: GameState, point: PointData): PointData[] => {
-  const { x, y } = point.coordinate;
+export const findNeighbours = (state: GameState, coordinate: Coordinate): PointData[] => {
+  const { x, y } = coordinate;
   const neighbours: PointData[] = [];
   NEIGHBOUR_DIRECTIONS.forEach(direction => {
     const neighbour = state.pointsByCoordinate[getCoordinateKey({

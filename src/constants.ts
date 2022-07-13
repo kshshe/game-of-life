@@ -1,3 +1,1 @@
-export const SCALE = 10;
-
-export const debug = localStorage.getItem('debug')
+export const SCALE = 20;
