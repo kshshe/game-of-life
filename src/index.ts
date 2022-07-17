@@ -6,12 +6,6 @@ import { drawInitial } from './draw'
 import { initControls } from './controls/initControls'
 
 const init = async () => {
-  try {
-    await navigator.serviceWorker.register('/sw.js');
-  } catch (err) {
-    console.log('Service worker registration failed: ', err);
-  }
-
   const root = document.getElementById('root')
   const controls = document.querySelector('.controls')
   const types = document.querySelector('.types')
